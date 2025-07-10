@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define pp pair<int,int>
+#define ppi pair<pair<int,int>,int>
+#define int long long
+#define mod 1000000007
+#define mod2 998244353
+
+void solve()
+{
+    int n,m; cin>>n>>m;
+    vector<list<pp>>graph(n, list<pp>());
+    for(int i=0; i<m; i++)
+    {
+        int a,b,c; cin>>a>>b>>c;
+        a--; b--;
+        graph[a].push_back({b,c});
+    }
+
+    priority_queue<pp, vector<pp>, greater<pp>>pq;
+    vector<int>parent(n);
+    vector<int>distance(n, LLONG_MAX);
+    
+    for(int i=0; i<n; i++) parent[i]= i;
+
+    pq.push({0,0});
+    distance[0]=0;
+    parent[0]=0;
+
+    while(pq.size())
+    {
+        pp curr= pq.top(); pq.pop();
+        int wt= curr.first;
+        int node= curr.second;
+
+        for(auto ele: graph[node]) //node val + wt
+        {
+            if(distance[ele.first]> distance[node]+ ele.second)
+            {
+                distance[ele.first]= distance[node]+ ele.second;
+                parent[ele.first]= node;
+                pq.push({distance[ele.first], ele.first});
+            }
+        }
+    }
+
+    vector<int>ans;
+    int curr= n-1;
+    while(curr!=0)
+    {
+        if(curr== parent[curr])
+        {
+            cout<<-1<<endl;
+            return;
+        }
+        ans.push_back(curr);
+        curr= parent[curr];
+    }
+
+    ans.push_back(curr);
+    reverse(ans.begin(), ans.end());
+    for(auto ele: ans) cout<<ele+1<<" ";
+}
+ 
+signed main() 
+{
+    // int t; cin>>t;
+    // while(t--)
+    solve();
+}
