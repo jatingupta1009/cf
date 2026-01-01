@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<int> compress(vector<int> v) {
+    vector<int> ans= v; 
+    sort(ans.begin(), ans.end());
+    ans.erase(unique(ans.begin(), ans.end()), ans.end());
+
+    for (int &x : v)
+        x = lower_bound(ans.begin(), ans.end(), x) - ans.begin() + 1;
+
+    return v;       
+}
+
+    vector<long long> bit; 
+int N;
+
+void update(int i, long long val) {
+    while (i <= N) {
+        bit[i] += val;
+        i += i & -i;
+    }
+}
+
+long long sum(int i) {
+    long long s = 0;
+    while (i > 0) {
+        s += bit[i];
+        i -= i & -i;
+    }
+    return s;
+} 
+    
+    long long minInversionCount(vector<int>& v, int k) {
+        v= compress(v);
+        int n= v.size();
+        N= *max_element(v.begin(), v.end());
+        bit.resize(N+1, 0);
+
+        long long ans=0;
+        long long mini=0;
+        for(int i=0; i<k; i++)
+        {
+             ans+= (sum(N)- sum(v[i]));
+             update(v[i], 1);
+        }
+
+        mini=ans;
+
+        for(int i=k; i<n; i++)
+        {
+            long long temp= v[i-k];
+            long long sub= sum(temp-1);
+            update(temp, -1);
+            long long add= (sum(N)-sum(v[i]));
+            update(v[i], 1);
+
+            ans= ans-sub+add;
+            mini= min(mini, ans);
+        }
+
+        return mini;
+    }
+};
